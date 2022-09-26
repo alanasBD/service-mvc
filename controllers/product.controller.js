@@ -7,6 +7,7 @@ const getProducts = async(req,res)=>{
     //status,sort,page,limit ->query parameter
     //sort,page,limit -> exclude
      let filters = {...req.query};
+     console.log('filters',filters);
      const excludeFields = ["sort","page","limit"];
      excludeFields.forEach(field => delete filters[field]);
 
@@ -28,12 +29,28 @@ const getProducts = async(req,res)=>{
 
      //gt,gte,lt,lte
     let filtersString = JSON.stringify(filters);
-  
+    console.log('string',filtersString);
     filtersString = filtersString.replace(/\b(gt|gte|lt|lte)\b/g,match=>`$${match}`)
    console.log(filtersString);
    filters = JSON.parse(filtersString);
-   console.log(filters);
+   console.log('regrex',filters);
+   
 
+   if(req.query.page){
+      const {page = 1,limit = 10} = req.query;
+      //50 products
+      //each page 10 products
+      //page 1->1-10
+      //page 2->11-20
+      //page 3->21-30->page 3 -> skip 1-20 -> 3-1 ->  2*10
+      //page 4->31-40
+      //page 5->41-50
+    //  const skip = (page-1)*(limit*1);
+    const skip = (page-1)*parseInt(limit);
+    queries.skip = skip;
+    queries.limit = parseInt(limit);
+
+   }
    
      
 
